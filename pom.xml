@@ -20,7 +20,7 @@
 		<commons-lang3.version>3.3.2</commons-lang3.version>
 		<commons-collections4.version>4.1</commons-collections4.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.io.platform.version>1.1.2.RELEASE</spring.io.platform.version>
+		<spring.io.platform.version>1.1.5.RELEASE</spring.io.platform.version>
 		<apache.commons-collections.version>4.1</apache.commons-collections.version>
 		<springframework.version>4.1.1.RELEASE</springframework.version>
 		<aspectj.version>1.8.5</aspectj.version>

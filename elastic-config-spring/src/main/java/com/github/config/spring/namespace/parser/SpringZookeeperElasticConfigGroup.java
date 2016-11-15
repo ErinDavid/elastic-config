@@ -11,7 +11,6 @@ import org.springframework.core.PriorityOrdered;
 import com.github.config.group.ZookeeperConfigProfile;
 import com.github.config.group.ZookeeperElasticConfigGroup;
 import com.github.config.spring.datasource.PlaceholderResolved;
-import com.github.config.spring.datasource.RegistryPropertySource;
 
 /**
  * 使用Spring启动基于Zookeeper的注册中心.
@@ -37,7 +36,8 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
     @Override
     public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) {
 
-        PlaceholderResolved placeholderResolved = new PlaceholderResolved(beanFactory, new RegistryPropertySource(this));
+        PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory)
+            .elasticConfig(this).bulid();
         initElasticConfig(beanFactory, placeholderResolved);
         initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
 
