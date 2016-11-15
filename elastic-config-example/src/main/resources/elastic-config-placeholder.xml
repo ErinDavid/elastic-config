@@ -1,0 +1,23 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:register="http://www.github.com/schema/config/register"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+             http://www.github.com/schema/config/register http://www.github.com/schema/config/reg/reg.xsd">
+
+
+	<context:component-scan base-package="com.github.config" />
+	<context:property-placeholder location="classpath:conf/*.properties" />
+	
+	<register:config id="elasticconfig0" serverlist="${zk.address}"
+		namespace="${zk.namespace}" project="${config.project}" version="${config.version}"
+		node="${config.node0}" />
+
+
+	<bean class="com.github.config.demo.simple.EalsticConfigBean">
+		<property name="booleanProperty" value="${boolean_property_key}" />
+		<property name="stringProperty" value="${string_property_key}" />
+		<property name="intProperty" value="${int_property_key}" />
+	</bean>
+
+</beans>
