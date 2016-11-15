@@ -23,7 +23,7 @@ public class ElasticConfigPlaceHodlerSupport {
 
         while (true) {
 
-            ElasticConfig bean = (ElasticConfig) context.getBean("elasticconfig1");
+            ElasticConfig bean = (ElasticConfig) context.getBean("elasticconfig0");
             System.out.println(bean);
 
             EalsticConfigBean exampleBean = context.getBean(EalsticConfigBean.class);

@@ -5,8 +5,10 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +22,9 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 
+import com.github.config.api.ElasticConfig;
 import com.github.config.register.utils.ReflectionUtils;
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 /**
  * 占位符处理类.
@@ -38,12 +40,15 @@ public final class PlaceholderResolved {
     @Getter
     private final Map<String, PropertySourcesPlaceholderConfigurer> placeholderMap;
 
-    private final Map<Class<?>, PropertySources> cache = Maps.newConcurrentMap();
+    private final ConcurrentHashMap<Class<?>, PropertySources> cache = new ConcurrentHashMap<Class<?>, PropertySources>();
 
-    public PlaceholderResolved(final ConfigurableListableBeanFactory beanFactory,
-        RegistryPropertySource registryPropertySource) {
-        this.registryPropertySource = registryPropertySource;
+    private PlaceholderResolved(final ConfigurableListableBeanFactory beanFactory, ElasticConfig elasticConfig) {
+        this.registryPropertySource = new RegistryPropertySource(elasticConfig);
         placeholderMap = initPlaceholderMap(beanFactory);
+    }
+
+    public static PlaceholderResolvedBuilder builder() {
+        return new PlaceholderResolvedBuilder();
     }
 
     /**
@@ -119,8 +124,30 @@ public final class PlaceholderResolved {
         return new MutablePropertySourcesBuilder(placeholderConfigurer);
     }
 
+    @NoArgsConstructor
+    public static class PlaceholderResolvedBuilder {
+
+        private ConfigurableListableBeanFactory beanFactory;
+
+        private ElasticConfig elasticConfig;
+
+        public PlaceholderResolvedBuilder beanFactory(ConfigurableListableBeanFactory beanFactory) {
+            this.beanFactory = beanFactory;
+            return this;
+        }
+
+        public PlaceholderResolvedBuilder elasticConfig(ElasticConfig elasticConfig) {
+            this.elasticConfig = elasticConfig;
+            return this;
+        }
+
+        public PlaceholderResolved bulid() {
+            return new PlaceholderResolved(beanFactory, elasticConfig);
+        }
+    }
+
     @RequiredArgsConstructor
-    public class MutablePropertySourcesBuilder {
+    private class MutablePropertySourcesBuilder {
 
         /**
          * 易变属性源
