@@ -1,4 +1,4 @@
-# Elastic-Config  Distribute Configuration Center Based On ZK
+# Elastic-Config  Distributed Configuration Center Based On ZK
 
 Elastic-Config是基于ZooKeeper的分布式配置中心,目前主要特性：  
 1.配置简单，与Spring整合以及命名空间提供，在项目中引入一个标签，即可使用    

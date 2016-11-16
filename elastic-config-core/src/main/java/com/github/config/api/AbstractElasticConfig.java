@@ -59,10 +59,6 @@ public abstract class AbstractElasticConfig extends ConcurrentHashMap<String, St
         if (!Objects.equal(preValue, value)) {
             log.debug("Key {} change from {} to {}", key, preValue, value);
             super.put(key, value);
-
-            if (!Strings.isNullOrEmpty(preValue)) {
-                // 事件通知,待做 to do notify(key, value);
-            }
         }
         return preValue;
 
