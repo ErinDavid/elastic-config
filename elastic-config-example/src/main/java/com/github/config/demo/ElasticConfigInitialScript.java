@@ -20,36 +20,44 @@ import com.google.common.hash.Hashing;
  */
 public class ElasticConfigInitialScript {
 
-    // 写你自已的zookeeper地址
-    private static final String ZK = "192.168.2.230:4181";
+	// 写你自已的zookeeper地址
+	private static final String ZK = "localhost:4181";
 
-    private static final Map<String, String> data = Maps.newHashMap();
+	private static final Map<String, String> data = Maps.newHashMap();
 
-    static {
-        data.put("/github/projectname/1.0.0/property-config0/string_property_key", "Elastic-Config");
-        data.put("/github/projectname/1.0.0/property-config0/int_property_key", "20169");
-        data.put("/github/projectname/1.0.0/property-config0/boolean_property_key", "true");
-    }
+	static {
+		data.put(
+				"/github/projectname/1.0.0/property-config0/string_property_key",
+				"Elastic-Config");
+		data.put("/github/projectname/1.0.0/property-config0/int_property_key",
+				"20169");
+		data.put(
+				"/github/projectname/1.0.0/property-config0/boolean_property_key",
+				"true");
+	}
 
-    public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 
-        @Cleanup
-        CuratorFramework client = CuratorFrameworkFactory.newClient(ZK, new ExponentialBackoffRetry(100, 2));
-        client.start();
+		@Cleanup
+		CuratorFramework client = CuratorFrameworkFactory.newClient(ZK,
+				new ExponentialBackoffRetry(100, 2));
+		client.start();
 
-        for (Entry<String, String> item : data.entrySet()) {
-            Stat stat = client.checkExists().forPath(item.getKey());
-            if (stat == null) {
-                client.create().creatingParentsIfNeeded().forPath(item.getKey(), item.getValue().getBytes());
-            }
-        }
+		for (Entry<String, String> item : data.entrySet()) {
+			Stat stat = client.checkExists().forPath(item.getKey());
+			if (stat == null) {
+				client.create().creatingParentsIfNeeded()
+						.forPath(item.getKey(), item.getValue().getBytes());
+			}
+		}
 
-        client.setData().forPath("/github/projectname", sha1Digest("123456").getBytes());
+		client.setData().forPath("/github/projectname",
+				sha1Digest("123456").getBytes());
 
-    }
+	}
 
-    private static String sha1Digest(String text) {
-        return Hashing.sha1().hashBytes(text.getBytes()).toString();
-    }
+	private static String sha1Digest(String text) {
+		return Hashing.sha1().hashBytes(text.getBytes()).toString();
+	}
 
 }
