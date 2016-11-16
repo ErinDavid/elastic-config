@@ -14,6 +14,7 @@ Elastic-Config是基于ZooKeeper的分布式配置中心,目前主要特性：
 5.提供dump命令，导出配置
 
 ###Elastic-Config环境需求：
+
 1.Java 使用JDK1.7及其以上版本。  
 2.Zookeeper 使用Zookeeper 3.4.6及其以上版本。  
 3.Maven 使用Maven 3.0.4及其以上版本。  
@@ -35,4 +36,3 @@ eclipse / myeclipse 手动安装 lombok
     3.重启 eclipse / myeclipse
 
 idea 打开IDEA的Settings面板，并选择Plugins选项,点击 “Browse repositories..”,输入框输入”lombok”，搜索结果,点击安装即可！
-
