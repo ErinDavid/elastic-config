@@ -18,6 +18,12 @@ import com.github.config.listener.AbstractListenerManager;
 
 @Slf4j
 @RequiredArgsConstructor
+/**
+ * 监听器管理
+ * 
+ * @author ZhangWei
+ *
+ */
 public class ZookeeperListenerManager extends AbstractListenerManager {
 
     private final ZookeeperElasticConfigGroup zookeeperConfigGroup;
@@ -41,7 +47,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
             if (zookeeperConfigGroup.getConfigNodeStorage().getConfigProfile().isVersionRootPath(path)
                 && (Type.NODE_UPDATED == event.getType() || Type.NODE_REMOVED == event.getType())) {
 
-                log.info("reload all the config nodes");
+                log.debug("reload all the config nodes");
                 zookeeperConfigGroup.loadNode();
             }
 
@@ -49,7 +55,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
                 .getFullPath(ZKPaths.getNodeFromPath(path)).equals(path)
                 && (Type.NODE_ADDED == event.getType() || Type.NODE_UPDATED == event.getType() || Type.NODE_REMOVED == event
                     .getType())) {
-                log.info("reload the config node:{}", ZKPaths.getNodeFromPath(path));
+                log.debug("reload the config node:{}", ZKPaths.getNodeFromPath(path));
                 zookeeperConfigGroup.reloadKey(ZKPaths.getNodeFromPath(path));
             }
         }
@@ -59,7 +65,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
 
         @Override
         public void stateChanged(final CuratorFramework client, final ConnectionState newState) {
-            log.debug("zookeeper connection state changed.new state:{}", newState);
+            log.info("zookeeper connection state changed.new state:{}", newState);
             if (ConnectionState.RECONNECTED == newState) {
                 zookeeperConfigGroup.loadNode();
             }

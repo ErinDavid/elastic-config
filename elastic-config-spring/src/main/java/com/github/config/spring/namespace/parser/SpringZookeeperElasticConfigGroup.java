@@ -67,12 +67,9 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
 
     /**
      * 解析占位符
-     * <p>
-     * 在没有可用占位符配置器工厂情况下，调用PlaceholderConfigurerFactory中的的PropertySourcesPlaceholderConfigurer解析解析占位符
-     * </p
      * 
-     * @param beanFactory
-     * @param placeholderResolved
+     * @param beanFactory beanFactory Bean工厂
+     * @param placeholderResolved 占位符处理类.
      */
     private void initWithNoDefaulPlaceholderConfigurer(final ConfigurableListableBeanFactory beanFactory,
         PlaceholderResolved placeholderResolved) {

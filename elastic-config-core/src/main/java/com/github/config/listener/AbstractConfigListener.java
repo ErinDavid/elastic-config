@@ -5,6 +5,11 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
+/**
+ * 监听器抽像类
+ * 
+ * @author ZhangWei
+ */
 public abstract class AbstractConfigListener implements TreeCacheListener {
 
     @Override

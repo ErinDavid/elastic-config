@@ -1,4 +1,3 @@
-
 package com.github.config.dump;
 
 import java.io.BufferedReader;
@@ -22,10 +21,10 @@ import com.github.config.storage.ConfigNodeStorage;
 import com.google.common.base.Joiner;
 
 /**
- * 作业监控服务.
+ * Dump配置服务.
  */
 @Slf4j
-public class MonitorService {
+public class DumpConfigService {
 
     public static final String DUMP_COMMAND = "dump";
 
@@ -37,7 +36,8 @@ public class MonitorService {
 
     private volatile boolean closed;
 
-    public MonitorService(final ConfigNodeStorage coordinatorRegistryCenter, final ZookeeperConfigProfile configProfile) {
+    public DumpConfigService(final ConfigNodeStorage coordinatorRegistryCenter,
+        final ZookeeperConfigProfile configProfile) {
         this.configProfile = configProfile;
         this.coordinatorRegistryCenter = coordinatorRegistryCenter;
     }
