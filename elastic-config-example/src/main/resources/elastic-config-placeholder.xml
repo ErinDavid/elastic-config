@@ -11,7 +11,7 @@
 	
 	<register:config id="elasticconfig0" serverlist="${zk.address}"
 		namespace="${zk.namespace}" project="${config.project}" version="${config.version}"
-		node="${config.node0}" />
+		node="${config.node0}"/>
 
 
 	<bean class="com.github.config.demo.simple.EalsticConfigBean">

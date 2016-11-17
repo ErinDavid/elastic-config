@@ -46,10 +46,7 @@ import com.google.common.io.Files;
 @ViewScoped
 public class PropertyGroupManagedBean implements Serializable, IObserver {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -884408941213688603L;
 
     @ManagedProperty(value = "#{nodeService}")
     private INodeService nodeService;

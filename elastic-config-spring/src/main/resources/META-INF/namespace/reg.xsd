@@ -16,20 +16,9 @@
                     <xsd:attribute name="project" type="xsd:string" use="required" />
                     <xsd:attribute name="version" type="xsd:string" use="required" />
                     <xsd:attribute name="node" type="xsd:string" use="required" />
-                    <xsd:attribute name="base-sleep-time-milliseconds" type="xsd:string" />
-                    <xsd:attribute name="max-sleep-time-milliseconds" type="xsd:string" />
-                    <xsd:attribute name="max-retries" type="xsd:string" />
-                    <xsd:attribute name="overwrite" type="xsd:string" />
+                    <xsd:attribute name="refresh" type="xsd:boolean" default="false" />
                 </xsd:extension>
             </xsd:complexContent>
-        </xsd:complexType>
-    </xsd:element>
-    
-     <xsd:element name="placeholder">
-        <xsd:complexType>
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="location" type="xsd:string"/>
-            <xsd:attribute name="order" type="xsd:integer" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

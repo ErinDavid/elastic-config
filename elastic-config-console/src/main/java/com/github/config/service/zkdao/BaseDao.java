@@ -14,10 +14,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  */
 public abstract class BaseDao implements Serializable {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 677312538646939755L;
 
     private String zkAddress;
 

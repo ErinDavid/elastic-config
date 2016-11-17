@@ -3,6 +3,7 @@ package com.github.config.listener.zookeeper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -12,9 +13,13 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.utils.ZKPaths;
 
+import com.github.config.bus.ElasticConfigEvent;
+import com.github.config.bus.ElasticConfigEventBus;
+import com.github.config.bus.event.EventListener;
 import com.github.config.group.ZookeeperElasticConfigGroup;
 import com.github.config.listener.AbstractConfigListener;
 import com.github.config.listener.AbstractListenerManager;
+import com.github.config.listener.ElaticCofnigEventListener;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
     public void start() {
         addDataListener(new SettingChangedConfigListener());
         addConnectionStateListener(new ConnectionLostListener());
+        addEventListenerStateListener(new ElaticCofnigEventListener(zookeeperConfigGroup));
     }
 
     class SettingChangedConfigListener extends AbstractConfigListener {
@@ -53,10 +59,18 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
 
             if (zookeeperConfigGroup.getConfigNodeStorage().getConfigProfile()
                 .getFullPath(ZKPaths.getNodeFromPath(path)).equals(path)
-                && (Type.NODE_ADDED == event.getType() || Type.NODE_UPDATED == event.getType() || Type.NODE_REMOVED == event
-                    .getType())) {
+                && (eventMap.containsKey(event.getType()))) {
+
                 log.debug("reload the config node:{}", ZKPaths.getNodeFromPath(path));
-                zookeeperConfigGroup.reloadKey(ZKPaths.getNodeFromPath(path));
+                String key = ZKPaths.getNodeFromPath(path);
+                zookeeperConfigGroup.reloadKey(key);
+
+                String value = zookeeperConfigGroup.getConfigNodeStorage().getConfigNodeDataDirectly(key);
+                if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, zookeeperConfigGroup.get(key))) {
+                    ElasticConfigEventBus.pushEvent(ElasticConfigEvent.builder().path(path).value(value)
+                        .eventType(eventMap.get(event.getType())).build());
+                }
+
             }
         }
     }
@@ -80,6 +94,11 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
     @Override
     protected void addConnectionStateListener(ConnectionStateListener listener) {
         zookeeperConfigGroup.getConfigNodeStorage().addConnectionStateListener(listener);
+    }
+
+    @Override
+    protected void addEventListenerStateListener(EventListener listener) {
+        listener.register();
     }
 
 }

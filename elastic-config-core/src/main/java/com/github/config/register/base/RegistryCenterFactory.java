@@ -1,4 +1,3 @@
-
 package com.github.config.register.base;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,5 +50,12 @@ public final class RegistryCenterFactory {
         result.init();
         registryCenterMap.putIfAbsent(hashCode, result);
         return result;
+    }
+
+    /**
+     * 清空缓存中所有ElasticConfigRegistryCenter
+     */
+    public static void clearRegistryCenterMap() {
+        registryCenterMap.clear();
     }
 }

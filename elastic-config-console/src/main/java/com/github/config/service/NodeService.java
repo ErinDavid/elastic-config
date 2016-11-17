@@ -11,16 +11,10 @@ import com.github.config.service.entity.PropertyItem;
 import com.github.config.service.zkdao.INodeDao;
 import com.github.config.service.zkdao.IPropertyDao;
 
-/**
- *
- */
 @Service
 public class NodeService implements INodeService, Serializable {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8144546191743589658L;
 
     @Autowired
     private INodeDao nodeDao;

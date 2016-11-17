@@ -4,10 +4,7 @@ import java.io.Serializable;
 
 public class PropertyItem implements Serializable {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3189608011329109220L;
 
     private String name;
 
