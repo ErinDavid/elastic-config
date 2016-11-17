@@ -18,7 +18,7 @@ public class EventPublisher {
     /**
      * 事件发布件.
      *
-     * @param event 积分调用执行事件
+     * @param event 发布事件
      */
     public void pushEvent(final NodeEvent event) {
         if (listeners.isEmpty()) {
@@ -30,7 +30,7 @@ public class EventPublisher {
     /**
      * 注册事件监听器.
      *
-     * @param listener 积分调用执行事件监听器
+     * @param listener 事件监听器
      */
     public void register(final EventListener listener) {
         if (null != listeners.putIfAbsent(listener.getName(), listener)) {
