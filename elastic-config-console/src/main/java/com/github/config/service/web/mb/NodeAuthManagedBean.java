@@ -23,10 +23,7 @@ import com.google.common.collect.Lists;
 @SessionScoped
 public class NodeAuthManagedBean implements Serializable, ISubject {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5359262798219710859L;
 
     private String nodeName;
 

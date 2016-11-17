@@ -14,10 +14,7 @@ import com.google.common.base.Throwables;
  */
 public class PropertyDao extends BaseDao implements IPropertyDao {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3463175603551362125L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyDao.class);
 

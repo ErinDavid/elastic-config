@@ -19,10 +19,7 @@ import com.google.common.collect.Lists;
  */
 public class NodeDao extends BaseDao implements INodeDao {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6744538797251780631L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeDao.class);
 

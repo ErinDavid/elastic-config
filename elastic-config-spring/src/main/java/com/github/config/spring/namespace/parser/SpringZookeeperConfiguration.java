@@ -20,6 +20,8 @@ final class SpringZookeeperConfiguration {
 
     private final String node;
 
+    private String refresh;
+
     private String baseSleepTimeMilliseconds;
 
     private String maxSleepTimeMilliseconds;

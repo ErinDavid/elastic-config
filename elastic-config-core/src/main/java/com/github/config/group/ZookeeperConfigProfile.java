@@ -3,6 +3,7 @@ package com.github.config.group;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.apache.curator.utils.ZKPaths;
 
@@ -15,6 +16,7 @@ import com.github.config.api.ConfigProfile;
  */
 @Setter
 @Getter
+@ToString
 @NoArgsConstructor
 public class ZookeeperConfigProfile extends ConfigProfile {
 

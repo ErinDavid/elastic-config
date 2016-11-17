@@ -12,10 +12,7 @@ import com.google.common.hash.Hashing;
  */
 public class AuthDao extends BaseDao implements IAuthDao {
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7475992839472404945L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthDao.class);
 

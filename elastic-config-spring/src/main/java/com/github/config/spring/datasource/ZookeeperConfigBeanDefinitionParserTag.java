@@ -25,6 +25,8 @@ public class ZookeeperConfigBeanDefinitionParserTag {
 
     public static final String REGISTER_CONFIG_ELEMENT = "config";
 
+    public static final String CONFIG_REFRESH = "refresh";
+
     public static final String REGISTER_PLACEHOLDER_ELEMENT = "placeholder";
 
 }

@@ -26,7 +26,7 @@ import com.google.common.base.Strings;
 @ViewScoped
 public class NodeDataManagedBean implements Serializable, IObserver {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 492472305620127433L;
 
     @ManagedProperty(value = "#{nodeService}")
     private INodeService nodeService;

@@ -33,7 +33,7 @@ public class ConfigGroupBeanDefinitionParser extends AbstractBeanDefinitionParse
             element.getAttribute(ZookeeperConfigBeanDefinitionParserTag.PROJECT_ATTRIBUTE),
             element.getAttribute(ZookeeperConfigBeanDefinitionParserTag.VERSION_ATTRIBUTE),
             element.getAttribute(ZookeeperConfigBeanDefinitionParserTag.CONFIG_ATTRIBUTE));
+        result.setRefresh(element.getAttribute(ZookeeperConfigBeanDefinitionParserTag.CONFIG_REFRESH));
         return result;
     }
-
 }
