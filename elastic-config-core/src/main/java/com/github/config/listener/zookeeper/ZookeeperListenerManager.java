@@ -78,7 +78,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
     }
 
     private void reload(String path) {
-        log.info("reload the config node:{}", ZKPaths.getNodeFromPath(path));
+        log.debug("reload the config node:{}", ZKPaths.getNodeFromPath(path));
         String key = ZKPaths.getNodeFromPath(path);
         zookeeperConfigGroup.reloadKey(key);
     }
