@@ -21,56 +21,32 @@ import com.github.config.listener.AbstractConfigListener;
 import com.github.config.listener.AbstractListenerManager;
 import com.github.config.listener.ElaticCofnigEventListener;
 
-@Slf4j
-@RequiredArgsConstructor
 /**
  * 监听器管理
  * 
  * @author ZhangWei
- *
  */
+@Slf4j
+@RequiredArgsConstructor
 public class ZookeeperListenerManager extends AbstractListenerManager {
 
     private final ZookeeperElasticConfigGroup zookeeperConfigGroup;
 
     @Override
     public void start() {
-        addDataListener(new SettingChangedConfigListener());
+        addDataListener(new ConfigChangedConfigListener());
         addConnectionStateListener(new ConnectionLostListener());
         addEventListenerStateListener(new ElaticCofnigEventListener(zookeeperConfigGroup));
     }
 
-    class SettingChangedConfigListener extends AbstractConfigListener {
+    class ConfigChangedConfigListener extends AbstractConfigListener {
 
         @Override
         protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {
 
-            if (client.getState() == CuratorFrameworkState.STOPPED) {
-                return;
-            }
-
-            log.info("elastic config node change.type:{},path:{}", event.getType(), path);
-            if (zookeeperConfigGroup.getConfigNodeStorage().getConfigProfile().isVersionRootPath(path)
-                && (Type.NODE_UPDATED == event.getType() || Type.NODE_REMOVED == event.getType())) {
-
-                log.debug("reload all the config nodes");
-                zookeeperConfigGroup.loadNode();
-            }
-
-            if (zookeeperConfigGroup.getConfigNodeStorage().getConfigProfile()
-                .getFullPath(ZKPaths.getNodeFromPath(path)).equals(path)
-                && (eventMap.containsKey(event.getType()))) {
-
-                log.debug("reload the config node:{}", ZKPaths.getNodeFromPath(path));
-                String key = ZKPaths.getNodeFromPath(path);
-                zookeeperConfigGroup.reloadKey(key);
-
-                String value = zookeeperConfigGroup.getConfigNodeStorage().getConfigNodeDataDirectly(key);
-                if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, zookeeperConfigGroup.get(key))) {
-                    ElasticConfigEventBus.pushEvent(ElasticConfigEvent.builder().path(path).value(value)
-                        .eventType(eventMap.get(event.getType())).build());
-                }
-
+            if (!isStopped(client) && isNotified(client, event, path)) {
+                reload(path);
+                pushEvent(event, path);
             }
         }
     }
@@ -101,4 +77,29 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         listener.register();
     }
 
+    private void reload(String path) {
+        log.info("reload the config node:{}", ZKPaths.getNodeFromPath(path));
+        String key = ZKPaths.getNodeFromPath(path);
+        zookeeperConfigGroup.reloadKey(key);
+    }
+
+    private void pushEvent(final TreeCacheEvent event, String path) {
+        String key = ZKPaths.getNodeFromPath(path);
+        String value = zookeeperConfigGroup.getConfigNodeStorage().getConfigNodeDataDirectly(key);
+        if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, zookeeperConfigGroup.get(key))) {
+            ElasticConfigEventBus.pushEvent(ElasticConfigEvent.builder().path(path).value(value)
+                .eventType(eventMap.get(event.getType())).build());
+        }
+    }
+
+    private boolean isStopped(final CuratorFramework client) {
+        return client.getState() == CuratorFrameworkState.STOPPED;
+    }
+
+    private boolean isNotified(final CuratorFramework client, final TreeCacheEvent event, final String path) {
+        log.info("elastic config node change.type:{},path:{}", event.getType(), path);
+        return zookeeperConfigGroup.getConfigNodeStorage().getConfigProfile()
+            .getFullPath(ZKPaths.getNodeFromPath(path)).equals(path)
+            && (eventMap.containsKey(event.getType()));
+    }
 }

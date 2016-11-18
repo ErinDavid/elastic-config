@@ -11,7 +11,7 @@ import com.github.config.bus.event.EventListener;
 import com.google.common.collect.Maps;
 
 /**
- * 注册中心的监听器管理者的抽象类.
+ * 注册中心的监听器管理者抽象类.
  * 
  * @author ZhangWei
  */

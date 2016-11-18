@@ -1,5 +1,7 @@
 package com.github.config.demo.spring;
 
+import lombok.Cleanup;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.github.config.demo.simple.EalsticConfigBean;
@@ -8,11 +10,9 @@ import com.github.config.demo.simple.WithSpelBean;
 
 public class ElasticConfigPlaceHodlerSupport {
 
-    // @SneakyThrows
     public static void main(String[] args) {
 
-        // @Cleanup
-
+        @Cleanup
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
             "classpath:elastic-config-placeholder.xml");
         context.registerShutdownHook();
@@ -30,7 +30,7 @@ public class ElasticConfigPlaceHodlerSupport {
 
                 WithSpelBean spel = context.getBean(WithSpelBean.class);
                 spel.someMethod();
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             }
 
         }

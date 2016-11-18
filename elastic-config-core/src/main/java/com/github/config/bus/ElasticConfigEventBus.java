@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import com.github.config.listener.ElaticCofnigEventListener;
 
 /**
- * ElasticConfig事件发布总线.
+ * ElasticConfig事件总线.
  *
  * @author ZhangWei
  */
