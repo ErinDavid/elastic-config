@@ -45,8 +45,9 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {
 
             if (!isStopped(client) && isNotified(client, event, path)) {
-                reload(path);
-                pushEvent(event, path);
+                String oldvalue = oldvalue(path);
+                ZookeeperListenerManager.this.reload(path);
+                ZookeeperListenerManager.this.pushEvent(event, path, oldvalue);
             }
         }
     }
@@ -77,16 +78,20 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         listener.register();
     }
 
+    private String oldvalue(final String path) {
+        return zookeeperConfigGroup.get(ZKPaths.getNodeFromPath(path));
+    }
+
     private void reload(String path) {
         log.debug("reload the config node:{}", ZKPaths.getNodeFromPath(path));
         String key = ZKPaths.getNodeFromPath(path);
         zookeeperConfigGroup.reloadKey(key);
     }
 
-    private void pushEvent(final TreeCacheEvent event, String path) {
+    private void pushEvent(final TreeCacheEvent event, String path, String oldvalue) {
         String key = ZKPaths.getNodeFromPath(path);
         String value = zookeeperConfigGroup.getConfigNodeStorage().getConfigNodeDataDirectly(key);
-        if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, zookeeperConfigGroup.get(key))) {
+        if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, oldvalue)) {
             ElasticConfigEventBus.pushEvent(ElasticConfigEvent.builder().path(path).value(value)
                 .eventType(eventMap.get(event.getType())).build());
         }
