@@ -54,6 +54,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
 		}
 	}
 
+
 	class ConnectionLostListener implements ConnectionStateListener {
 
 		@Override
@@ -86,7 +87,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
 	private String oldvalue(final String path) {
 		return zookeeperConfigGroup.get(ZKPaths.getNodeFromPath(path));
 	}
-
+	
 	/**
 	 * 重加载路径path配置节点
 	 * 
@@ -98,6 +99,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
 		String key = ZKPaths.getNodeFromPath(path);
 		zookeeperConfigGroup.reloadKey(key);
 	}
+
 
 	/**
 	 * 发布事件
