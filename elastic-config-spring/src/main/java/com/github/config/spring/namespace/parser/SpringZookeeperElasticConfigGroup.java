@@ -1,6 +1,8 @@
 package com.github.config.spring.namespace.parser;
 
 import lombok.Setter;
+import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -24,6 +26,7 @@ import com.google.common.base.Strings;
  * 
  * @author ZhangWei
  */
+@Slf4j
 public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticConfigGroup implements
     BeanFactoryPostProcessor, ApplicationContextAware, PriorityOrdered {
 
@@ -35,6 +38,8 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
     private ApplicationContext applicationContext;
 
     private final SpringZookeeperConfiguration springZookeeperConfigurationDto;
+
+    private final Object lockObject = SpringZookeeperElasticConfigGroup.class;
 
     public SpringZookeeperElasticConfigGroup(final SpringZookeeperConfiguration springZookeeperConfigurationDto) {
         super(new ZookeeperConfigProfile(), springZookeeperConfigurationDto.getNode());
@@ -67,14 +72,24 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
 
         if (Optional.fromNullable(applicationContext).isPresent() && isRefresh()) {
 
-            RegistryCenterFactory.clearRegistryCenterMap();
-            if (applicationContext.getParent() != null) {
-                ((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
-            }
-
-            ((AbstractRefreshableApplicationContext) applicationContext).refresh();
-
+            log.info("config code changed and refreh conxext!");
+            refreshConext();
         }
+
+    }
+
+    /**
+     * 刷新容器
+     */
+    @Synchronized("lockObject")
+    private void refreshConext() {
+
+        RegistryCenterFactory.clearRegistryCenterMap();
+        if (applicationContext.getParent() != null) {
+            ((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
+        }
+
+        ((AbstractRefreshableApplicationContext) applicationContext).refresh();
 
     }
 
