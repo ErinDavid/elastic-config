@@ -90,4 +90,3 @@ elastic-config-core：ElasticConfig核心模块
 elastic-config-spring：命名空间提供模块  
 config-toolkit-demo：ElasticConfig Demo  
 elastic-config-console:ElasticConfig后台管理  
-
