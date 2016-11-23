@@ -28,15 +28,16 @@ lombok 的官方网址：[http://projectlombok.org](http://projectlombok.org)
 #####lombok 安装  
 使用 lombok 是需要安装的，如果不安装，IDE 则无法解析 lombok 注解。
 
-eclipse / myeclipse 手动安装 lombok   
+1.Eclipse/Myeclipse 安装lombok   
  
     1. 将 lombok.jar 复制到 myeclipse.ini / eclipse.ini 所在的文件夹目录下  
     2. 打开 eclipse.ini / myeclipse.ini，在最后面插入以下两行并保存：
         -Xbootclasspath/a:lombok.jar
         -javaagent:lombok.jar
-    3.重启 eclipse / myeclipse
+    3.重启 eclipse/myeclipse
 
-idea 打开IDEA的Settings面板，并选择Plugins选项,点击 “Browse repositories..”,输入框输入”lombok”，搜索结果,点击安装即可！
+2.Idea 安装lombok  
+  打开IDEA的Settings面板，并选择Plugins选项,点击 “Browse repositories..”,输入框输入”lombok”，搜索结果,点击安装即可！
 
 #####开发指南
 
