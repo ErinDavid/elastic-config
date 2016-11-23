@@ -1,11 +1,11 @@
 # Elastic-Config  Distributed Configuration Center Based On ZK
 
 Elastic-Config是基于ZooKeeper的分布式配置中心,简化在分布式下环境中的配置，目前主要特性：  
-1.配置简单，与Spring整合以及命名空间提供，在项目中引入配置标签即可
-2.同时支持本地properties文件配置和Elastic-Config配置，优先使用本地properties文件配置
-2.支持Spring @Value注解注入，兼容Spring @Value注解，项目无需作大的改动   
-3.支持动态更新（本地properties文件配置动态更新修改暂不支持，后续有支持的计划，无需重启服务器）   
-4.提供管理后台，对配置进行统一管理，支持properties文件上传以及批量上传
+1.配置简单，与Spring整合以及命名空间提供，在项目中引入配置标签即可  
+2.同时支持本地properties文件配置和Elastic-Config配置，优先使用本地properties文件配置  
+3.支持Spring @Value注解注入，兼容Spring @Value注解，项目无需作大的改动   
+4.支持动态更新（本地properties文件配置动态更新修改暂不支持，后续有支持的计划，无需重启服务器）   
+5.提供管理后台，对配置进行统一管理，支持properties文件上传以及批量上传
 
 ###后续RoadMap:
 1.支持本地配置和修改  
@@ -90,4 +90,3 @@ elastic-config-core：ElasticConfig核心模块
 elastic-config-spring：命名空间提供模块  
 config-toolkit-demo：ElasticConfig Demo  
 elastic-config-console:ElasticConfig后台管理  
-
