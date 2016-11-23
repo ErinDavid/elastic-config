@@ -51,7 +51,7 @@ public class DumpConfigService {
             return;
         }
         try {
-            log.info("Elastic job: monitor service is running, the port is '{}'", port);
+            log.info("elastic config: monitor service is running, the port is '{}'", port);
             openSocketForMonitor(port);
         }
         catch (final IOException ex) {
