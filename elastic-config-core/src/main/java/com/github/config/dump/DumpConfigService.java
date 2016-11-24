@@ -43,7 +43,7 @@ public class DumpConfigService {
     }
 
     /**
-     * 初始化作业监听服务.
+     * 监听服务.
      */
     public void listen() {
         int port = configProfile.getMonitorPort();
@@ -121,7 +121,7 @@ public class DumpConfigService {
     }
 
     /**
-     * 关闭作业监听服务.
+     * 关闭服务.
      */
     public void close() {
         closed = true;

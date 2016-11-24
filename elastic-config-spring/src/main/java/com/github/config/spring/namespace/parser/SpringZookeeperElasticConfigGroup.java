@@ -1,10 +1,15 @@
 package com.github.config.spring.namespace.parser;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import lombok.Setter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -27,125 +32,144 @@ import com.google.common.base.Strings;
  * @author ZhangWei
  */
 @Slf4j
-public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticConfigGroup implements
-    BeanFactoryPostProcessor, ApplicationContextAware, PriorityOrdered {
+public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticConfigGroup implements BeanFactoryPostProcessor, ApplicationContextAware,
+		PriorityOrdered {
 
-    private static final long serialVersionUID = -944560650617189226L;
+	private static final long serialVersionUID = -944560650617189226L;
 
-    @Setter
-    private int order = Ordered.HIGHEST_PRECEDENCE;
+	@Setter
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 
-    private ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 
-    private final SpringZookeeperConfiguration springZookeeperConfigurationDto;
+	private ConfigurableListableBeanFactory beanFactory;
 
-    private final Object lockObject = SpringZookeeperElasticConfigGroup.class;
+	private final SpringZookeeperConfiguration springZookeeperConfigurationDto;
 
-    public SpringZookeeperElasticConfigGroup(final SpringZookeeperConfiguration springZookeeperConfigurationDto) {
-        super(new ZookeeperConfigProfile(), springZookeeperConfigurationDto.getNode());
-        this.springZookeeperConfigurationDto = springZookeeperConfigurationDto;
+	private final Object lockObject = SpringZookeeperElasticConfigGroup.class;
 
-    }
+	public SpringZookeeperElasticConfigGroup(final SpringZookeeperConfiguration springZookeeperConfigurationDto) {
+		super(new ZookeeperConfigProfile(), springZookeeperConfigurationDto.getNode());
+		this.springZookeeperConfigurationDto = springZookeeperConfigurationDto;
 
-    @Override
-    public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) {
+	}
 
-        PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory)
-            .elasticConfig(this).bulid();
-        initElasticConfig(beanFactory, placeholderResolved);
-        initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
+	@Override
+	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) {
 
-    }
+		PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory).elasticConfig(this).bulid();
+		initElasticConfig(beanFactory, placeholderResolved);
+		initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
+		this.beanFactory = beanFactory;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+	}
 
-    @Override
-    public int getOrder() {
-        return order;
-    }
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
-    @Override
-    public void refreshElasticConfig() {
+	@Override
+	public int getOrder() {
+		return order;
+	}
 
-        if (Optional.fromNullable(applicationContext).isPresent() && isRefresh()) {
+	@Override
+	public void refreshElasticConfig() {
 
-            log.info("config code changed and refreh conxext!");
-            refreshConext();
-        }
+		if (Optional.fromNullable(applicationContext).isPresent() && isRefresh()) {
 
-    }
+			log.info("config code changed and refreh conxext!");
+			refreshConext();
+		} else {
 
-    /**
-     * 刷新容器
-     */
-    @Synchronized("lockObject")
-    private void refreshConext() {
+			log.info("config code changed and refreh bean with annotation!");
+			refreshWithAnnotaion();
+		}
 
-        RegistryCenterFactory.clearRegistryCenterMap();
-        if (applicationContext.getParent() != null) {
-            ((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
-        }
+	}
 
-        ((AbstractRefreshableApplicationContext) applicationContext).refresh();
+	/**
+	 * 刷新容器
+	 */
+	@Synchronized("lockObject")
+	private void refreshConext() {
 
-    }
+		RegistryCenterFactory.clearRegistryCenterMap();
+		if (applicationContext.getParent() != null) {
+			((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
+		}
 
-    /**
-     * 配置发更变化是否刷新容器
-     * 
-     * @return 是否刷新容器
-     */
-    public boolean isRefresh() {
+		((AbstractRefreshableApplicationContext) applicationContext).refresh();
 
-        boolean isrefesh = false;
-        if (!Strings.isNullOrEmpty(springZookeeperConfigurationDto.getRefresh())) {
-            isrefesh = Boolean.valueOf(springZookeeperConfigurationDto.getRefresh());
-        }
+	}
 
-        return isrefesh;
-    }
+	/**
+	 * 刷新注解
+	 */
+	private void refreshWithAnnotaion() {
 
-    /**
-     * 初始化 ElasticConfig
-     * 
-     * @param beanFactory Bean工厂
-     * @param placeholderResolved 占位符处理类.
-     */
-    private void initElasticConfig(final ConfigurableListableBeanFactory beanFactory,
-        PlaceholderResolved placeholderResolved) {
+		AutowiredAnnotationBeanPostProcessor beanPostProcessor = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
+		Iterator<String> iterator = Arrays.asList(applicationContext.getBeanDefinitionNames()).iterator();
 
-        this.getConfigProfile().setServerlist(
-            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getServerLists()));
-        this.getConfigProfile().setNamespaces(
-            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNamespace()));
-        this.getConfigProfile().setRootNode(
-            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRootNode()));
-        this.getConfigProfile().setVersion(
-            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getVersion()));
-        this.getConfigProfile().setNode(
-            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNode()));
-        springZookeeperConfigurationDto.setRefresh(placeholderResolved
-            .getResolvePlaceholderText(springZookeeperConfigurationDto.getRefresh()));
-        super.init();
-    }
+		while (iterator.hasNext()) {
+			String beanName = iterator.next();
+			beanPostProcessor.postProcessPropertyValues(new MutablePropertyValues(beanFactory.getBeanDefinition(beanName).getPropertyValues()), null,
+					applicationContext.getBean(beanName), beanName);
+		}
+	}
 
-    /**
-     * 解析占位符
-     * 
-     * @param beanFactory beanFactory Bean工厂
-     * @param placeholderResolved 占位符处理类.
-     */
-    private void initWithNoDefaulPlaceholderConfigurer(final ConfigurableListableBeanFactory beanFactory,
-        PlaceholderResolved placeholderResolved) {
+	/**
+	 * 配置发更变化是否刷新容器
+	 * 
+	 * @return 是否刷新容器
+	 */
+	public boolean isRefresh() {
 
-        PropertySourcesPlaceholderConfigurer placeHolder = placeholderResolved.getPlaceholderMap().get(
-            PropertySourcesPlaceholderConfigurer.class.getCanonicalName());
-        if (placeHolder != null) {
-            placeHolder.postProcessBeanFactory(beanFactory);
-        }
-    }
+		boolean isrefesh = false;
+		if (!Strings.isNullOrEmpty(springZookeeperConfigurationDto.getRefresh())) {
+			isrefesh = Boolean.valueOf(springZookeeperConfigurationDto.getRefresh());
+		}
+
+		return isrefesh;
+	}
+
+	/**
+	 * 初始化 ElasticConfig
+	 * 
+	 * @param beanFactory
+	 *            Bean工厂
+	 * @param placeholderResolved
+	 *            占位符处理类.
+	 */
+	private void initElasticConfig(final ConfigurableListableBeanFactory beanFactory, PlaceholderResolved placeholderResolved) {
+
+		this.getConfigProfile().setServerlist(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getServerLists()));
+		this.getConfigProfile().setNamespaces(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNamespace()));
+		this.getConfigProfile().setRootNode(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRootNode()));
+		this.getConfigProfile().setVersion(
+
+		placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getVersion()));
+		this.getConfigProfile().setNode(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNode()));
+		springZookeeperConfigurationDto.setRefresh(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRefresh()));
+		super.init();
+	}
+
+	/**
+	 * 解析占位符
+	 * 
+	 * @param beanFactory
+	 *            beanFactory Bean工厂
+	 * @param placeholderResolved
+	 *            占位符处理类.
+	 */
+	private void initWithNoDefaulPlaceholderConfigurer(final ConfigurableListableBeanFactory beanFactory, PlaceholderResolved placeholderResolved) {
+
+		PropertySourcesPlaceholderConfigurer placeHolder = placeholderResolved.getPlaceholderMap().get(
+				PropertySourcesPlaceholderConfigurer.class.getCanonicalName());
+		if (placeHolder != null) {
+			placeHolder.postProcessBeanFactory(beanFactory);
+		}
+	}
 
 }
