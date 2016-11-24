@@ -36,12 +36,12 @@ public abstract class AbstractListenerManager {
     protected abstract void addDataListener(final TreeCacheListener listener);
 
     /**
-     * 添加加拉状态监听器.
+     * 添加连接状态监听器.
      */
     protected abstract void addConnectionStateListener(final ConnectionStateListener listener);
 
     /**
-     * 添加加拉状态监听器.
+     * 添加事件监听器.
      */
     protected abstract void addEventListenerStateListener(final EventListener listener);
 
