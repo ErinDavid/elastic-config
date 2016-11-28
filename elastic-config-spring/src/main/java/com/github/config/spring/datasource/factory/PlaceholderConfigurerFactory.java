@@ -1,4 +1,4 @@
-package com.github.config.spring.datasource;
+package com.github.config.spring.datasource.factory;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;

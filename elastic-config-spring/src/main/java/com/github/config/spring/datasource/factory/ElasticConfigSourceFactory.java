@@ -1,9 +1,10 @@
-package com.github.config.spring.datasource;
+package com.github.config.spring.datasource.factory;
 
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 
 import com.github.config.api.ElasticConfig;
+import com.github.config.spring.datasource.RegistryPropertySource;
 import com.google.common.base.Preconditions;
 
 /**

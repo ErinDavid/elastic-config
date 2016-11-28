@@ -8,7 +8,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.w3c.dom.Element;
 
 import com.github.config.spring.datasource.RegistryPropertySources;
-import com.github.config.spring.datasource.ZookeeperConfigBeanDefinitionParserTag;
+import com.github.config.spring.datasource.tag.ZookeeperConfigBeanDefinitionParserTag;
 
 /**
  * 注册中心占位符命名空间解析器.

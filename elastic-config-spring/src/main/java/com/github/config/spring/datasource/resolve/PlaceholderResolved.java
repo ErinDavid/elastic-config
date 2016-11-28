@@ -1,4 +1,4 @@
-package com.github.config.spring.datasource;
+package com.github.config.spring.datasource.resolve;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,6 +24,7 @@ import org.springframework.core.env.PropertySourcesPropertyResolver;
 
 import com.github.config.api.ElasticConfig;
 import com.github.config.register.utils.ReflectionUtils;
+import com.github.config.spring.datasource.RegistryPropertySource;
 import com.google.common.base.Optional;
 
 /**
@@ -280,4 +281,5 @@ public final class PlaceholderResolved {
         return new PropertySourcesPropertyResolver((PropertySources) PropertySourcesPlaceholderConfigurer.class
             .getField("propertySources").get(placeholderConfigurer));
     }
+
 }

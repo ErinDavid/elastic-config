@@ -2,7 +2,7 @@ package com.github.config.spring.namespace.handler;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import com.github.config.spring.datasource.ZookeeperConfigBeanDefinitionParserTag;
+import com.github.config.spring.datasource.tag.ZookeeperConfigBeanDefinitionParserTag;
 import com.github.config.spring.namespace.parser.ConfigGroupBeanDefinitionParser;
 import com.github.config.spring.namespace.parser.PlaceholderBeanDefinitionParser;
 

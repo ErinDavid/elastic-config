@@ -6,7 +6,7 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-import com.github.config.spring.datasource.ZookeeperConfigBeanDefinitionParserTag;
+import com.github.config.spring.datasource.tag.ZookeeperConfigBeanDefinitionParserTag;
 
 /**
  * 注册中心配置项使用占位符的命名空间解析器.
