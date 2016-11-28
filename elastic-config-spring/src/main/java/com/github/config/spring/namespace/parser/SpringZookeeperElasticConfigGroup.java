@@ -59,9 +59,9 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
 
         PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory)
             .elasticConfig(this).bulid();
+        initBeanFactory(beanFactory);
         initElasticConfig(beanFactory, placeholderResolved);
         initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
-        this.beanFactory = beanFactory;
 
     }
 
@@ -112,7 +112,6 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
     private void refreshWithAnnotaion() {
 
         Iterator<String> iterator = Arrays.asList(applicationContext.getBeanDefinitionNames()).iterator();
-
         while (iterator.hasNext()) {
             String beanName = iterator.next();
             AutowiredAnnotationResoved.getInstance(beanFactory).postProcessPropertyValues(
@@ -175,6 +174,15 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
         if (placeHolder != null) {
             placeHolder.postProcessBeanFactory(beanFactory);
         }
+    }
+
+    /**
+     * 初始化BeanFactory
+     * 
+     * @param listableBeanFactory bean工厂
+     */
+    private void initBeanFactory(ConfigurableListableBeanFactory listableBeanFactory) {
+        this.beanFactory = listableBeanFactory;
     }
 
 }

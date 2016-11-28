@@ -57,7 +57,8 @@ public class AutowiredAnnotationResoved {
 
     private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<Class<? extends Annotation>>();
 
-    private static final ConcurrentHashMap<String, AutowiredAnnotationResoved> CONTAINER = new ConcurrentHashMap<String, AutowiredAnnotationResoved>();
+    private static final ConcurrentHashMap<String, AutowiredAnnotationResoved> CONTAINER = new ConcurrentHashMap<String, AutowiredAnnotationResoved>(
+        4);
 
     @SuppressWarnings("unchecked")
     private AutowiredAnnotationResoved(ConfigurableListableBeanFactory beanFactory) {
