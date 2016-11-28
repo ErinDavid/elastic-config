@@ -1,11 +1,19 @@
 # Elastic-Config  Distributed Configuration Center Based On ZK
 
-Elastic-Config是基于ZooKeeper的分布式配置中心,简化在分布式下环境中的配置，目前主要特性：  
+Elastic-Config是基于ZooKeeper的分布式配置中心,简化在分布式下环境中的配置，典型应用场景：  
+
+- 公司内存在多个系统且系统之间有一定的联系性  
+- 系统需要配置多个环境，开发环境，测试环境，预上线环境，线上环境
+
+![](http://i.imgur.com/nsf7RZO.png)
+
+
+Elastic-Config主要特性：  
 1.配置简单，与Spring整合以及命名空间提供，在项目中引入配置标签即可  
 2.同时支持本地properties文件配置和Elastic-Config配置，优先使用本地properties文件配置  
 3.支持Spring @Value注解注入，兼容Spring @Value注解，项目无需作大的改动   
 4.支持动态更新（本地properties文件配置动态更新修改暂不支持，后续有支持的计划，无需重启服务器）   
-5.提供开源的管理后台--config-toolkit，对配置进行统一管理，支持properties文件上传以及批量上传
+5.提供开源的管理后台，对配置进行统一管理，支持properties文件上传以及批量上传
 
 ###后续RoadMap:
 1.支持本地配置和修改  
@@ -38,6 +46,8 @@ lombok 的官方网址：[http://projectlombok.org](http://projectlombok.org)
 
 2.Idea 安装lombok  
   打开IDEA的Settings面板，并选择Plugins选项,点击 “Browse repositories..”,输入框输入”lombok”，搜索结果,点击安装即可！
+
+![](http://i.imgur.com/fnIuSqm.png)
 
 #####开发指南
 
@@ -82,7 +92,7 @@ project：项目名称
 version：项目版本  
 node：配置节点
 
-注：对于需要执更新的配置，在项目注入ElasticConfig实例，从ElasticConfig实例获取配置的值，如果有多个ElasticConfig实例，注入时需要指定实例名称,对于只需要配置用Spring @Value注入，对于像数据库连接这类需要初始化的配置，ElasticConfig提供了refresh属性，refresh为true，更新会刷新容器--刷新容过程中，不能有业务处理！
+注：对于需要执更新的配置，在项目注入ElasticConfig实例，从ElasticConfig实例获取配置的值，如果有多个ElasticConfig实例，注入时需要指定实例名称,对于只需要配置用Spring @Value注入，对于像数据库连接这类需要初始化的配置，ElasticConfig提供了refresh属性，refresh为true，更新会刷新容器--需要注意刷新过程中业务处理！
 
 3.创在ZK上创建根节点，下载elastic-config-console运行，导入配置即可。
 
@@ -91,3 +101,4 @@ elastic-config-core：ElasticConfig核心模块
 elastic-config-spring：命名空间提供模块  
 config-toolkit-demo：ElasticConfig Demo  
 elastic-config-console:ElasticConfig后台管理  
+
