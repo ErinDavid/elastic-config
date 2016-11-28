@@ -1,4 +1,4 @@
-package com.github.config.spring.datasource;
+package com.github.config.spring.datasource.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
