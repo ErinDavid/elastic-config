@@ -1,6 +1,7 @@
 package com.github.config.spring.namespace.parser;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -18,6 +19,8 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import com.github.config.group.ZookeeperConfigProfile;
 import com.github.config.group.ZookeeperElasticConfigGroup;
@@ -26,6 +29,8 @@ import com.github.config.spring.datasource.resolve.AutowiredAnnotationResoved;
 import com.github.config.spring.datasource.resolve.PlaceholderResolved;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * 基于Spring的Zookeeper的注册中心配置.
@@ -60,9 +65,9 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
 
 		PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory).elasticConfig(this).bulid();
 		initBeanFactory(beanFactory);
+		initLocalFileMutimap(placeholderResolved);
 		initElasticConfig(beanFactory, placeholderResolved);
 		initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
-
 	}
 
 	@Override
@@ -169,6 +174,28 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
 				PropertySourcesPlaceholderConfigurer.class.getCanonicalName());
 		if (placeHolder != null) {
 			placeHolder.postProcessBeanFactory(beanFactory);
+		}
+	}
+
+	/**
+	 * 初始化本地配置文件路径
+	 * 
+	 * @param placeholderResolved
+	 *            占位符处理类.
+	 */
+	private void initLocalFileMutimap(PlaceholderResolved placeholderResolved) {
+
+		Optional<Resource[]> optional = placeholderResolved.getPlaceholderConfigurerResources();
+		if (optional.isPresent()) {
+
+			Multimap<String, File> fileMultimap = HashMultimap.create();
+			for (Resource resource : optional.get()) {
+				if (FileSystemResource.class.isAssignableFrom(resource.getClass())) {
+					File file = ((FileSystemResource) resource).getFile();
+					fileMultimap.put(file.getParent(), file);
+				}
+			}
+			this.getConfigProfile().setFilemultimap(fileMultimap);
 		}
 	}
 

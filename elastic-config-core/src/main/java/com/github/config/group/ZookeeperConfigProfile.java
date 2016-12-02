@@ -20,42 +20,40 @@ import com.github.config.api.ConfigProfile;
 @NoArgsConstructor
 public class ZookeeperConfigProfile extends ConfigProfile {
 
-    public ZookeeperConfigProfile(String serverlist, String namespaces, String rootNode, String version) {
-        super(rootNode, version);
-        this.serverlist = serverlist;
-        this.namespaces = namespaces;
-    }
+	public ZookeeperConfigProfile(String serverlist, String namespaces, String rootNode, String version) {
+		super(rootNode, version);
+		this.serverlist = serverlist;
+		this.namespaces = namespaces;
+	}
 
-    /**
-     * zookeeper地址,包括IP地址和端口号. 多个地址用逗号分隔
-     */
-    private String serverlist;
+	/**
+	 * zookeeper地址,包括IP地址和端口号. 多个地址用逗号分隔
+	 */
+	private String serverlist;
 
-    /**
-     * Zookeeper项目配置命名空间
-     */
+	/**
+	 * Zookeeper项目配置命名空间
+	 */
+	private String namespaces;
 
-    private String namespaces;
+	/**
+	 * Zookeeper项目配置监控端口
+	 */
+	private int monitorPort = -1;
 
-    /**
-     * Zookeeper项目配置监控端口
-     */
+	public String getConcurrentRootNodePath() {
+		return ZKPaths.makePath(rootNode, version, node);
+	}
 
-    private int monitorPort = -1;
+	public String getVersionRootNodePath(String node) {
+		return ZKPaths.makePath(rootNode, version, node);
+	}
 
-    public String getConcurrentRootNodePath() {
-        return ZKPaths.makePath(rootNode, version, node);
-    }
+	public String getFullPath(String key) {
+		return ZKPaths.makePath(rootNode, version, node, key);
+	}
 
-    public String getVersionRootNodePath(String node) {
-        return ZKPaths.makePath(rootNode, version, node);
-    }
-
-    public String getFullPath(String key) {
-        return ZKPaths.makePath(rootNode, version, node, key);
-    }
-
-    public boolean isVersionRootPath(String path) {
-        return getConcurrentRootNodePath().equals(path);
-    }
+	public boolean isVersionRootPath(String path) {
+		return getConcurrentRootNodePath().equals(path);
+	}
 }
