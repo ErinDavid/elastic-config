@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import lombok.Setter;
 import lombok.Synchronized;
@@ -19,6 +20,8 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -38,175 +41,207 @@ import com.google.common.collect.Multimap;
  * @author ZhangWei
  */
 @Slf4j
-public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticConfigGroup implements BeanFactoryPostProcessor, ApplicationContextAware,
-		PriorityOrdered {
+public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticConfigGroup implements
+    BeanFactoryPostProcessor, ApplicationContextAware, PriorityOrdered {
 
-	private static final long serialVersionUID = -944560650617189226L;
+    private static final long serialVersionUID = -944560650617189226L;
 
-	@Setter
-	private int order = Ordered.HIGHEST_PRECEDENCE;
+    @Setter
+    private int order = Ordered.HIGHEST_PRECEDENCE;
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	private ConfigurableListableBeanFactory beanFactory;
+    private ConfigurableListableBeanFactory beanFactory;
 
-	private final SpringZookeeperConfiguration springZookeeperConfigurationDto;
+    private final SpringZookeeperConfiguration springZookeeperConfigurationDto;
 
-	private final Object lockObject = SpringZookeeperElasticConfigGroup.class;
+    private final Object lockObject = SpringZookeeperElasticConfigGroup.class;
 
-	public SpringZookeeperElasticConfigGroup(final SpringZookeeperConfiguration springZookeeperConfigurationDto) {
-		super(new ZookeeperConfigProfile(), springZookeeperConfigurationDto.getNode());
-		this.springZookeeperConfigurationDto = springZookeeperConfigurationDto;
+    public SpringZookeeperElasticConfigGroup(final SpringZookeeperConfiguration springZookeeperConfigurationDto) {
+        super(new ZookeeperConfigProfile(), springZookeeperConfigurationDto.getNode());
+        this.springZookeeperConfigurationDto = springZookeeperConfigurationDto;
 
-	}
+    }
 
-	@Override
-	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) {
+    @Override
+    public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) {
 
-		PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory).elasticConfig(this).bulid();
-		initBeanFactory(beanFactory);
-		initLocalFileMutimap(placeholderResolved);
-		initElasticConfig(beanFactory, placeholderResolved);
-		initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
-	}
+        PlaceholderResolved placeholderResolved = PlaceholderResolved.builder().beanFactory(beanFactory)
+            .elasticConfig(this).bulid();
+        initBeanFactory(beanFactory);
+        initLocalFileMutimap(placeholderResolved);
+        initElasticConfig(beanFactory, placeholderResolved);
+        initWithNoDefaulPlaceholderConfigurer(beanFactory, placeholderResolved);
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
-	@Override
-	public int getOrder() {
-		return order;
-	}
+    @Override
+    public int getOrder() {
+        return order;
+    }
 
-	@Override
-	public void refreshElasticConfig() {
+    @Override
+    public void refreshElasticConfig() {
 
-		if (Optional.fromNullable(applicationContext).isPresent() && isRefresh()) {
+        if (Optional.fromNullable(applicationContext).isPresent() && isRefresh()) {
+            log.info("config code changed and refreh context!");
+            refreshConext();
+        }
+        else {
+            log.info("config code changed and refreh bean!");
+            refreshBean();
+        }
 
-			log.info("config code changed and refreh conxext!");
-			refreshConext();
-		} else {
+    }
 
-			log.info("config code changed and refreh bean with annotation!");
-			refreshWithAnnotaion();
-		}
+    /**
+     * 刷新容器
+     */
+    @Synchronized("lockObject")
+    private void refreshConext() {
 
-	}
+        RegistryCenterFactory.clearRegistryCenterMap();
+        if (applicationContext.getParent() != null) {
+            ((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
+        }
 
-	/**
-	 * 刷新容器
-	 */
-	@Synchronized("lockObject")
-	private void refreshConext() {
+        ((AbstractRefreshableApplicationContext) applicationContext).refresh();
 
-		RegistryCenterFactory.clearRegistryCenterMap();
-		if (applicationContext.getParent() != null) {
-			((AbstractRefreshableApplicationContext) applicationContext.getParent()).refresh();
-		}
+    }
 
-		((AbstractRefreshableApplicationContext) applicationContext).refresh();
+    /**
+     * 刷新Bean
+     */
+    private void refreshBean() {
+        refreshLocalFile();
+        refreshWithAnnotaion();
+    }
 
-	}
+    /**
+     * 刷新注解
+     */
+    private void refreshWithAnnotaion() {
 
-	/**
-	 * 刷新注解
-	 */
-	private void refreshWithAnnotaion() {
+        Iterator<String> iterator = Arrays.asList(applicationContext.getBeanDefinitionNames()).iterator();
+        while (iterator.hasNext()) {
+            String beanName = iterator.next();
+            AutowiredAnnotationResoved.getInstance(beanFactory).postProcessPropertyValues(
+                new MutablePropertyValues(beanFactory.getBeanDefinition(beanName).getPropertyValues()),
+                Optional.<PropertyDescriptor[]> absent(), applicationContext.getBean(beanName), beanName);
+        }
+    }
 
-		Iterator<String> iterator = Arrays.asList(applicationContext.getBeanDefinitionNames()).iterator();
-		while (iterator.hasNext()) {
-			String beanName = iterator.next();
-			AutowiredAnnotationResoved.getInstance(beanFactory).postProcessPropertyValues(
-					new MutablePropertyValues(beanFactory.getBeanDefinition(beanName).getPropertyValues()), Optional.<PropertyDescriptor[]> absent(),
-					applicationContext.getBean(beanName), beanName);
-		}
-	}
+    /**
+     * 刷新本地配置文件
+     */
+    private void refreshLocalFile() {
 
-	/**
-	 * 配置发更变化是否刷新容器
-	 * 
-	 * @return 是否刷新容器
-	 */
-	public boolean isRefresh() {
+        Map<String, PropertySourcesPlaceholderConfigurer> placeholderMap = applicationContext.getBeansOfType(
+            PropertySourcesPlaceholderConfigurer.class, true, false);
 
-		boolean isrefesh = false;
-		if (!Strings.isNullOrEmpty(springZookeeperConfigurationDto.getRefresh())) {
-			isrefesh = Boolean.valueOf(springZookeeperConfigurationDto.getRefresh());
-		}
+        if (!placeholderMap.isEmpty()) {
+            for (Entry<String, PropertySourcesPlaceholderConfigurer> entry : placeholderMap.entrySet()) {
 
-		return isrefesh;
-	}
+                PropertySourcesPlaceholderConfigurer placeholderConfigurer = entry.getValue();
+                Optional<PropertiesPropertySource> optional = PlaceholderResolved
+                    .getLocalPropertiesSources(placeholderConfigurer);
+                if (MutablePropertySources.class.isAssignableFrom(placeholderConfigurer.getAppliedPropertySources()
+                    .getClass()))
+                    ((MutablePropertySources) placeholderConfigurer.getAppliedPropertySources()).replace(
+                        "localProperties", optional.get());
+            }
+        }
 
-	/**
-	 * 初始化 ElasticConfig
-	 * 
-	 * @param beanFactory
-	 *            Bean工厂
-	 * @param placeholderResolved
-	 *            占位符处理类.
-	 */
-	private void initElasticConfig(final ConfigurableListableBeanFactory beanFactory, PlaceholderResolved placeholderResolved) {
+    }
 
-		this.getConfigProfile().setServerlist(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getServerLists()));
-		this.getConfigProfile().setNamespaces(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNamespace()));
-		this.getConfigProfile().setRootNode(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRootNode()));
-		this.getConfigProfile().setVersion(
+    /**
+     * 配置发更变化是否刷新容器
+     * 
+     * @return 是否刷新容器
+     */
+    public boolean isRefresh() {
 
-		placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getVersion()));
-		this.getConfigProfile().setNode(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNode()));
-		springZookeeperConfigurationDto.setRefresh(placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRefresh()));
-		super.init();
-	}
+        boolean isrefesh = false;
+        if (!Strings.isNullOrEmpty(springZookeeperConfigurationDto.getRefresh())) {
+            isrefesh = Boolean.valueOf(springZookeeperConfigurationDto.getRefresh());
+        }
 
-	/**
-	 * 解析占位符
-	 * 
-	 * @param beanFactory
-	 *            beanFactory Bean工厂
-	 * @param placeholderResolved
-	 *            占位符处理类.
-	 */
-	private void initWithNoDefaulPlaceholderConfigurer(final ConfigurableListableBeanFactory beanFactory, PlaceholderResolved placeholderResolved) {
+        return isrefesh;
+    }
 
-		PropertySourcesPlaceholderConfigurer placeHolder = placeholderResolved.getPlaceholderMap().get(
-				PropertySourcesPlaceholderConfigurer.class.getCanonicalName());
-		if (placeHolder != null) {
-			placeHolder.postProcessBeanFactory(beanFactory);
-		}
-	}
+    /**
+     * 初始化 ElasticConfig
+     * 
+     * @param beanFactory Bean工厂
+     * @param placeholderResolved 占位符处理类.
+     */
+    private void initElasticConfig(final ConfigurableListableBeanFactory beanFactory,
+        PlaceholderResolved placeholderResolved) {
 
-	/**
-	 * 初始化本地配置文件路径
-	 * 
-	 * @param placeholderResolved
-	 *            占位符处理类.
-	 */
-	private void initLocalFileMutimap(PlaceholderResolved placeholderResolved) {
+        this.getConfigProfile().setServerlist(
+            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getServerLists()));
+        this.getConfigProfile().setNamespaces(
+            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNamespace()));
+        this.getConfigProfile().setRootNode(
+            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getRootNode()));
+        this.getConfigProfile().setVersion(
 
-		Optional<Resource[]> optional = placeholderResolved.getPlaceholderConfigurerResources();
-		if (optional.isPresent()) {
+        placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getVersion()));
+        this.getConfigProfile().setNode(
+            placeholderResolved.getResolvePlaceholderText(springZookeeperConfigurationDto.getNode()));
+        springZookeeperConfigurationDto.setRefresh(placeholderResolved
+            .getResolvePlaceholderText(springZookeeperConfigurationDto.getRefresh()));
+        super.init();
+    }
 
-			Multimap<String, File> fileMultimap = HashMultimap.create();
-			for (Resource resource : optional.get()) {
-				if (FileSystemResource.class.isAssignableFrom(resource.getClass())) {
-					File file = ((FileSystemResource) resource).getFile();
-					fileMultimap.put(file.getParent(), file);
-				}
-			}
-			this.getConfigProfile().setFilemultimap(fileMultimap);
-		}
-	}
+    /**
+     * 解析占位符
+     * 
+     * @param beanFactory beanFactory Bean工厂
+     * @param placeholderResolved 占位符处理类.
+     */
+    private void initWithNoDefaulPlaceholderConfigurer(final ConfigurableListableBeanFactory beanFactory,
+        PlaceholderResolved placeholderResolved) {
 
-	/**
-	 * 初始化BeanFactory
-	 * 
-	 * @param listableBeanFactory
-	 *            bean工厂
-	 */
-	private void initBeanFactory(ConfigurableListableBeanFactory listableBeanFactory) {
-		this.beanFactory = listableBeanFactory;
-	}
+        PropertySourcesPlaceholderConfigurer placeHolder = placeholderResolved.getPlaceholderMap().get(
+            PropertySourcesPlaceholderConfigurer.class.getCanonicalName());
+        if (placeHolder != null) {
+            placeHolder.postProcessBeanFactory(beanFactory);
+        }
+    }
+
+    /**
+     * 初始化本地配置文件路径
+     * 
+     * @param placeholderResolved 占位符处理类.
+     */
+    private void initLocalFileMutimap(PlaceholderResolved placeholderResolved) {
+
+        Optional<Resource[]> optional = placeholderResolved.getPlaceholderConfigurerResources();
+        if (optional.isPresent()) {
+
+            Multimap<String, File> fileMultimap = HashMultimap.create();
+            for (Resource resource : optional.get()) {
+                if (FileSystemResource.class.isAssignableFrom(resource.getClass())) {
+                    File file = ((FileSystemResource) resource).getFile();
+                    fileMultimap.put(file.getParent(), file);
+                }
+            }
+            this.getConfigProfile().setFilemultimap(fileMultimap);
+        }
+    }
+
+    /**
+     * 初始化BeanFactory
+     * 
+     * @param listableBeanFactory bean工厂
+     */
+    private void initBeanFactory(ConfigurableListableBeanFactory listableBeanFactory) {
+        this.beanFactory = listableBeanFactory;
+    }
 
 }

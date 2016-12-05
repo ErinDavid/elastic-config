@@ -23,5 +23,10 @@ public enum EvenType {
     /**
      * 配置删除.
      */
-    CONFIG_DELETE
+    CONFIG_DELETE,
+
+    /**
+     * 文件修改.
+     */
+    FILE_MODIFY
 }

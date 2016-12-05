@@ -42,6 +42,9 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         addEventListenerStateListener(new ElaticCofnigEventListener(zookeeperConfigGroup));
     }
 
+    /**
+     * 添加事件监听器.
+     */
     class ConfigChangedConfigListener extends AbstractConfigListener {
 
         @Override
@@ -53,6 +56,9 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         }
     }
 
+    /**
+     * 连接状态监听器.
+     */
     class ConnectionLostListener implements ConnectionStateListener {
 
         @Override
@@ -64,18 +70,24 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
         }
     }
 
-    @Override
-    protected void addDataListener(TreeCacheListener listener) {
+    /**
+     * 添加数据结点监听器.
+     */
+    private void addDataListener(TreeCacheListener listener) {
         zookeeperConfigGroup.getConfigNodeStorage().addDataListener(listener);
     }
 
-    @Override
-    protected void addConnectionStateListener(ConnectionStateListener listener) {
+    /**
+     * 添加连接状态监听器.
+     */
+    private void addConnectionStateListener(ConnectionStateListener listener) {
         zookeeperConfigGroup.getConfigNodeStorage().addConnectionStateListener(listener);
     }
 
-    @Override
-    protected void addEventListenerStateListener(EventListener listener) {
+    /**
+     * 添加事件监听器.
+     */
+    private void addEventListenerStateListener(EventListener listener) {
         listener.register();
     }
 
@@ -97,7 +109,7 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
             ZKPaths.getNodeFromPath(path));
         if (!StringUtils.equals(value, oldvalue)) {
             ZookeeperListenerManager.this.reload(path);
-            ZookeeperListenerManager.this.pushEvent(event, path, value, oldvalue);
+            ZookeeperListenerManager.this.pushEvent(event, path, value);
         }
     }
 
@@ -120,9 +132,9 @@ public class ZookeeperListenerManager extends AbstractListenerManager {
      * @param value 配置节点新值
      * @param oldvalue 配置节点原始值
      */
-    private void pushEvent(final TreeCacheEvent event, String path, String value, String oldvalue) {
+    private void pushEvent(final TreeCacheEvent event, String path, String value) {
 
-        if (event.getType() == Type.NODE_UPDATED && !StringUtils.equals(value, oldvalue)) {
+        if (event.getType() == Type.NODE_UPDATED) {
             ElasticConfigEventBus.pushEvent(ElasticConfigEvent.builder().path(path).value(value)
                 .eventType(eventMap.get(event.getType())).build());
         }

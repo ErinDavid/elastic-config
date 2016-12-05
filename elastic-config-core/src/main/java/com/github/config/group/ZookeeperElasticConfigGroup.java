@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.github.config.api.AbstractElasticConfig;
 import com.github.config.api.ConfigProfile.KeyLoadingMode;
+import com.github.config.listener.file.LocalFileListenerManager;
 import com.github.config.listener.zookeeper.ZookeeperListenerManager;
 import com.github.config.register.base.RegistryCenterFactory;
 import com.github.config.storage.ConfigNodeStorage;
@@ -60,6 +61,7 @@ public class ZookeeperElasticConfigGroup extends AbstractElasticConfig {
     @Override
     protected void startListner() {
         new ZookeeperListenerManager(this).start();
+        new LocalFileListenerManager(this.getConfigProfile()).start();
     }
 
     @Override

@@ -33,13 +33,13 @@ Elastic-Config主要特性：
 Elastic-Config依赖lombok。导入源码会遇lombok中的注解导致不能编译，请安装lombok到你的IDE.  
 lombok 的官方网址：[http://projectlombok.org](http://projectlombok.org)
 
-#####lombok 安装  
-使用 lombok 是需要安装的，如果不安装，IDE 则无法解析 lombok 注解。
+#####Lombok 安装  
+使用Lombok是需要安装的，如果不安装，IDE则无法解析Lombok 注解。
 
-1.Eclipse/Myeclipse 安装lombok   
+1.Eclipse/Myeclipse 安装Lombok   
  
-    1. 将 lombok.jar 复制到 myeclipse.ini / eclipse.ini 所在的文件夹目录下  
-    2. 打开 eclipse.ini / myeclipse.ini，在最后面插入以下两行并保存：
+    1. 将lombok.jar 复制到 myeclipse.ini/eclipse.ini 所在的文件夹目录下  
+    2. 打开 eclipse.ini/myeclipse.ini，在最后面插入以下两行并保存：
         -Xbootclasspath/a:lombok.jar
         -javaagent:lombok.jar
     3.重启 eclipse/myeclipse
