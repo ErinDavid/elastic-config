@@ -30,6 +30,7 @@ import com.github.config.group.ZookeeperElasticConfigGroup;
 import com.github.config.register.base.RegistryCenterFactory;
 import com.github.config.spring.datasource.resolve.AutowiredAnnotationResoved;
 import com.github.config.spring.datasource.resolve.PlaceholderResolved;
+import com.github.config.spring.datasource.resolve.PlaceholderResolved.PropertySourcesEnum;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
@@ -152,7 +153,7 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
                 if (MutablePropertySources.class.isAssignableFrom(placeholderConfigurer.getAppliedPropertySources()
                     .getClass()))
                     ((MutablePropertySources) placeholderConfigurer.getAppliedPropertySources()).replace(
-                        "localProperties", optional.get());
+                        PropertySourcesEnum.LOCALPROPERTIES.getName(), optional.get());
             }
         }
 
