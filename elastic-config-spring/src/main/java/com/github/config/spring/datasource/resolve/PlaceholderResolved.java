@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -234,16 +235,19 @@ public final class PlaceholderResolved {
     @SneakyThrows
     private boolean isLocalOverride(PropertySourcesPlaceholderConfigurer placeholderConfigurer) {
 
-        return this.<Boolean> getPropertyValue(placeholderConfigurer, "localOverride").get();
+        return this.<Boolean> getPropertyValue(placeholderConfigurer, PropertySourcesEnum.LOCALOVERRIDE.getName())
+            .get();
     }
 
     @SneakyThrows
     private Optional<?> getEnvironmentSources(PropertySourcesPlaceholderConfigurer placeholderConfigurer) {
 
-        Optional<Environment> optional = this.<Environment> getPropertyValue(placeholderConfigurer, "environment");
+        Optional<Environment> optional = this.<Environment> getPropertyValue(placeholderConfigurer,
+            PropertySourcesEnum.ENVIRONMENT.getName());
 
         if (optional.isPresent()) {
-            return Optional.fromNullable(new PropertySource<Environment>("environmentProperties", optional.get()) {
+            return Optional.fromNullable(new PropertySource<Environment>(PropertySourcesEnum.ENVIRONMENTPROPERTIES
+                .getName(), optional.get()) {
                 @Override
                 public String getProperty(String key) {
                     return this.source.getProperty(key);
@@ -257,17 +261,20 @@ public final class PlaceholderResolved {
     public static Optional<PropertiesPropertySource> getLocalPropertiesSources(
         PropertySourcesPlaceholderConfigurer placeholderConfigurer) {
 
-        Method method = ReflectionUtils.findMethod(placeholderConfigurer.getClass(), "mergeProperties");
+        Method method = ReflectionUtils.findMethod(placeholderConfigurer.getClass(),
+            PropertySourcesEnum.MERGEPROPERTIES.getName());
         ReflectionUtils.makeAccessible(method);
         Properties properties = (java.util.Properties) ReflectionUtils.invokeMethod(method, placeholderConfigurer);
-        return Optional.fromNullable(new PropertiesPropertySource("localProperties", properties));
+        return Optional.fromNullable(new PropertiesPropertySource(PropertySourcesEnum.LOCALPROPERTIES.getName(),
+            properties));
     }
 
     @SneakyThrows
     private Optional<MutablePropertySources> getPropertySourcesSources(
         PropertySourcesPlaceholderConfigurer placeholderConfigurer) {
 
-        return this.<MutablePropertySources> getPropertyValue(placeholderConfigurer, "propertySources");
+        return this.<MutablePropertySources> getPropertyValue(placeholderConfigurer,
+            PropertySourcesEnum.PROPERTYSOURCES.getName());
     }
 
     public Optional<Resource[]> getPlaceholderConfigurerResources() {
@@ -276,7 +283,8 @@ public final class PlaceholderResolved {
         Iterator<Entry<String, PropertySourcesPlaceholderConfigurer>> iterator = placeholderMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, PropertySourcesPlaceholderConfigurer> entry = iterator.next();
-            Optional<Resource[]> optional = this.<Resource[]> getPropertyValue(entry.getValue(), "locations");
+            Optional<Resource[]> optional = this.<Resource[]> getPropertyValue(entry.getValue(),
+                PropertySourcesEnum.LOCATIONS.getName());
 
             if (optional.isPresent()) {
                 resources.addAll(Arrays.asList(optional.get()));
@@ -302,7 +310,18 @@ public final class PlaceholderResolved {
     private PropertySourcesPropertyResolver getPropertyResolverBeforeSpring4(
         final PropertySourcesPlaceholderConfigurer placeholderConfigurer) throws ReflectiveOperationException {
         return new PropertySourcesPropertyResolver((PropertySources) PropertySourcesPlaceholderConfigurer.class
-            .getField("propertySources").get(placeholderConfigurer));
+            .getField(PropertySourcesEnum.PROPERTYSOURCES.getName()).get(placeholderConfigurer));
+    }
+
+    @ToString
+    @RequiredArgsConstructor
+    public enum PropertySourcesEnum {
+        LOCATIONS("locations"), ENVIRONMENT("environment"), LOCALOVERRIDE("localOverride"), PROPERTYSOURCES(
+            "propertySources"), LOCALPROPERTIES("localProperties"), MERGEPROPERTIES("mergeProperties"), ENVIRONMENTPROPERTIES(
+            "environmentProperties");
+
+        @Getter
+        private final String name;
     }
 
 }
