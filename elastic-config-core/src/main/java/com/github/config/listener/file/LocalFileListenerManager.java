@@ -63,7 +63,7 @@ public class LocalFileListenerManager extends AbstractListenerManager {
         @Override
         public void run() {
             registerWatchService();
-            rotateListnerEvent();
+            roundRobinEvent();
             closeWatchService();
         }
 
@@ -83,7 +83,7 @@ public class LocalFileListenerManager extends AbstractListenerManager {
         /**
          * 轮巡监听事件
          */
-        private void rotateListnerEvent() {
+        private void roundRobinEvent() {
             while (!Thread.interrupted()) {
                 if (!listenEvent()) {
                     break;
