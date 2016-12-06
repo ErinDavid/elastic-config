@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -313,13 +312,11 @@ public final class PlaceholderResolved {
             .getField(PropertySourcesEnum.PROPERTYSOURCES.getName()).get(placeholderConfigurer));
     }
 
-    @ToString
     @RequiredArgsConstructor
-    public enum PropertySourcesEnum {
+    public static enum PropertySourcesEnum {
         LOCATIONS("locations"), ENVIRONMENT("environment"), LOCALOVERRIDE("localOverride"), PROPERTYSOURCES(
             "propertySources"), LOCALPROPERTIES("localProperties"), MERGEPROPERTIES("mergeProperties"), ENVIRONMENTPROPERTIES(
             "environmentProperties");
-
         @Getter
         private final String name;
     }
