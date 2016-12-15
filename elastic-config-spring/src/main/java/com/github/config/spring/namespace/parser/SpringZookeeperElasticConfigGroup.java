@@ -160,11 +160,11 @@ public final class SpringZookeeperElasticConfigGroup extends ZookeeperElasticCon
     }
 
     /**
-     * 配置发更变化是否刷新容器
+     * 配置发生变更是否刷新容器
      * 
      * @return 是否刷新容器
      */
-    public boolean isRefresh() {
+    private boolean isRefresh() {
 
         boolean isrefesh = false;
         if (!Strings.isNullOrEmpty(springZookeeperConfigurationDto.getRefresh())) {

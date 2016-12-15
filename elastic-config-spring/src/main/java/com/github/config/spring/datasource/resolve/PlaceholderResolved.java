@@ -290,7 +290,7 @@ public final class PlaceholderResolved {
             }
         }
 
-        return Optional.fromNullable(resources.toArray(new Resource[] {}));
+        return Optional.fromNullable(resources.toArray(new Resource[0]));
     }
 
     @SuppressWarnings("unchecked")
